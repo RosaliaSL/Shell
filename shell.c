@@ -62,38 +62,6 @@ int pwd(int argc, char* argv[]) {
     return 1;
 }
 
-// void execute_cd(char* arg){
-// 	// If we write no path (only 'cd'), then go to the home directory
-// 	if (arg == NULL) {
-// 		chdir(getenv("HOME")); 
-//         // printCurrentDirectory();
-//         // pwd();
-// 	}
-// 	/*
-//     Else we change the directory to the one specified by the argument
-//     This case will handle two cases:
-//     - cd .. (Go to the directory above the current directory in the tree)
-//     - cd ~ (Go to root)
-//     - cd specified-directory (Goes to the specified directory)
-//     */ 
-//     else if (chdir(arg) == 0) {
-//         printf("Directory Changed.\n");
-//         // pwd();
-//     // Specified directory not found
-//     } else if (chdir(arg) == -1) {
-// 		printf("%s: no such directory\n", arg);
-// 	}
-// }
-
-// int cd(int argc, char** command) {
-//     if (argc > 2) {
-//         printf("Incorrect number of parameters\n");
-//         return 1;
-//     }
-//     execute_cd(command[1]);
-//     return 1;
-// }
-
 int cd(int argc, char** command) {
     if (argc > 2) {
         printf("Incorrect number of parameters\n");
@@ -107,7 +75,6 @@ int cd(int argc, char** command) {
     } else if (chdir(command[1]) == -1) {
 		printf("%s: no such directory\n", command[1]);
 	}
-    // execute_cd(command[1]);
     return 1;
 }
 
@@ -151,17 +118,7 @@ int main() {
             // printf("%d\n", argc);
             isInternalCommand = checkAndExecuteInternal(argc, command);
         }
-
-        // printf("%s", inputString);
-        // printf("Hello");
     }
 
-
-
-    // pid = -10; // we initialize pid to a pid that is not possible
-    // return 0;
-
-    
-
-
+    return 0;
 }
