@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 
+char *CURRENT_PATH;
 char origin[1024];
 
 void initializeShell() {
@@ -140,19 +141,35 @@ int checkAndExecuteInternal(int argc, char** command) {
 }
 
 void checkAndExecuteExternal(int argc, char** command) {
+    char outputFilePath[2048];
+    // strcpy(outputFilePath, CURRENT_PATH);
+
+    int isExternalCommand = 0;
+
     if (strcmp(command[0], "cat") == 0) {
-
+        strcat(outputFilePath, "./Out/mycat");
+        isExternalCommand  = 1;
 	} else if (strcmp(command[0], "date") == 0) {
-
+        strcat(outputFilePath, "./Out/mydate");
+        isExternalCommand = 1;
 	} else if (strcmp(command[0], "ls") == 0) {
-
+        strcat(outputFilePath, "./Out/myls");
+        isExternalCommand = 1;
 	} else if (strcmp(command[0], "mkdir") == 0) {
-
+        strcat(outputFilePath, "./Out/mymkdir");
+        isExternalCommand = 1;
 	} else if (strcmp(command[0], "rm") == 0) {
-
+        strcat(outputFilePath, "./Out/myrm");
+        isExternalCommand = 1;
 	} else {
         printf("command not found: %s\n", command[0]);
     }
+
+    printf("%s\n", outputFilePath);
+    if (isExternalCommand && execv(outputFilePath, command) == -1) {
+        printf("Execution of command failed due to error in execv.\n");
+    }
+			
     return;
 }
 
@@ -160,7 +177,7 @@ int main() {
     initializeShell();
     int shouldExit = 0;
     int isInternalCommand = 0;
-    getcwd(origin, sizeof(origin));
+    CURRENT_PATH = getcwd(origin, sizeof(origin));
 
     while (!shouldExit) {
         printCurrentDirectory();
