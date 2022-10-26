@@ -41,7 +41,11 @@ void ls(const char* dirname, int flag_a, int flag_R) {
 }
 
 int main(int argc, const char *argv[]) {
+    // printf("Executing ls\n");
+    // printf("%d\n", argc);
+
     if (argc == 1) {
+        printf("Hello\n");
         ls(".", 0, 0);
     } else if (argc == 2) {
         if (argv[1][0] == '-') { // checking if option is passed
