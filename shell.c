@@ -142,8 +142,6 @@ int checkAndExecuteInternal(int argc, char** command) {
 
 void checkAndExecuteExternal(int argc, char** command) {
     char outputFilePath[2048];
-    // strcpy(outputFilePath, CURRENT_PATH);
-
     int isExternalCommand = 0;
 
     if (strcmp(command[0], "cat") == 0) {
@@ -165,16 +163,6 @@ void checkAndExecuteExternal(int argc, char** command) {
         printf("command not found: %s\n", command[0]);
     }
 
-    // printf("%s\n", outputFilePath);
-
-    // int i = 0;
-    // for (int i = 0; i < argc; i++) {
-    //     printf("%s\n", command[i]);
-    // }
-    // while(strcmp(command[i], "\0") != 0){
-    //     printf("%s\n", command[i]);
-    //     i++;
-    // }
     if (isExternalCommand && execv(outputFilePath, command) == -1) {
         printf("Execution of command failed due to error in execv.\n");
     }
@@ -204,13 +192,9 @@ int main() {
                 argc++;
             }
             char** copy = calloc(1024, argc);
-            // int i = 0;
             for (int j = 0; j < argc; j++) {
                 copy[j] = command[j];
-                // printf("command: %s\n", command[j]);
-                // printf("copy: %s\n", copy[j]);
             }
-            // printf("%d\n", argc);
             isInternalCommand = checkAndExecuteInternal(argc, command);
             if (!isInternalCommand) {
                 pid_t pid = fork();
@@ -218,7 +202,6 @@ int main() {
 				    printf("Error in creating child process.\n");
                 } else if (pid == 0) {
                     printf("Created child process.\n");
-                    // printf("%s\n", command[0]);
                     checkAndExecuteExternal(argc, copy);
                 } else if (pid > 0) {
                     pid_t p_temp = waitpid(pid, NULL, WUNTRACED);

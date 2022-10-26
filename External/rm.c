@@ -29,7 +29,7 @@ void rm(int argc, char *argv[], int currentFileIndex, int flag_v, int flag_i) {
     
     int isDeleted = remove(argv[currentFileIndex]);
     if (isDeleted != 0) {
-        printf("rm: %s: No such file or directory", argv[currentFileIndex]);
+        printf("rm: %s: No such file or directory\n", argv[currentFileIndex]);
     } else {
         if (flag_v) {
             printf("%s\n", argv[currentFileIndex]);
