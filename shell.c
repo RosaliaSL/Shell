@@ -5,7 +5,6 @@
 #include <errno.h>
 #include <pthread.h>
 
-char *CURRENT_PATH;
 char origin[1024];
 
 void initializeShell() {
@@ -204,7 +203,6 @@ int main() {
     initializeShell();
     int shouldExit = 0;
     int isInternalCommand = 0, isExternalCommand = 0, isExternalAPICommand = 0;
-    CURRENT_PATH = getcwd(origin, sizeof(origin));
 
     while (!shouldExit) {
         isInternalCommand = 0, isExternalCommand = 0, isExternalAPICommand = 0;
