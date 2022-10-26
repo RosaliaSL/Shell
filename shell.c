@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 
 char *CURRENT_PATH;
 char origin[1024];
@@ -158,12 +159,22 @@ void checkAndExecuteExternal(int argc, char** command) {
     if (execv(outputFilePath, command) == -1) {
         printf("Execution of command failed due to error in execv.\n");
     }
-			
-    return;
 }
 
-void checkAndExecuteExternalByAPI(int argc, char** command) {
-    char outputFilePath[2048];
+void* checkAndExecuteExternalByAPI(void* inputString) {
+    char* inputStringChar = (char*) inputString;
+    char** command = parse(inputStringChar);
+    
+    int argc = 0;
+    while(strcmp(command[argc], "\0") != 0){
+        argc++;
+    }
+    char** copy = calloc(1024, argc);
+    for (int j = 0; j < argc; j++) {
+        copy[j] = command[j];
+    }
+
+    char outputFilePath[1024];
 
     if (strcmp(command[0], "cat&t") == 0) {
         strcat(outputFilePath, "./Out/mycat");
@@ -175,22 +186,35 @@ void checkAndExecuteExternalByAPI(int argc, char** command) {
         strcat(outputFilePath, "./Out/mymkdir");
 	} else if (strcmp(command[0], "rm&t") == 0) {
         strcat(outputFilePath, "./Out/myrm");
-	} 	
-    return;
+	}
+
+    for (int i = 1; i < argc; i++) {
+        strcat(outputFilePath, " ");
+        strcat(outputFilePath, copy[i]);
+    }
+
+    if (system(outputFilePath) == -1) {
+        printf("Execution of command failed due to error in system() call.\n");
+    }
+    
+    return NULL;
 }
 
 int main() {
     initializeShell();
     int shouldExit = 0;
-    int isInternalCommand = 0;
+    int isInternalCommand = 0, isExternalCommand = 0, isExternalAPICommand = 0;
     CURRENT_PATH = getcwd(origin, sizeof(origin));
 
     while (!shouldExit) {
+        isInternalCommand = 0, isExternalCommand = 0, isExternalAPICommand = 0;
         printCurrentDirectory();
 
         char *inputString;
         inputString = readinput();
-        
+        char *inputStringCopy = malloc(strlen(inputString));
+        inputStringCopy = strcpy(inputStringCopy, inputString);
+
         if (strcmp(inputString, "\n") == 0) {
             continue;
         } else {
@@ -206,14 +230,15 @@ int main() {
             }
             isInternalCommand = checkAndExecuteInternal(argc, command);
             
-            int isExternalCommand = 0;
             if ((strcmp(command[0], "cat") == 0) || (strcmp(command[0], "date") == 0) || (strcmp(command[0], "ls") == 0) || (strcmp(command[0], "mkdir") == 0) || (strcmp(command[0], "rm") == 0)) {
                 isExternalCommand  = 1;
-	        } else if (!isInternalCommand) {
+	        } else if ((strcmp(command[0], "cat&t") == 0) || (strcmp(command[0], "date&t") == 0) || (strcmp(command[0], "ls&t") == 0) || (strcmp(command[0], "mkdir&t") == 0) || (strcmp(command[0], "rm&t") == 0)) {
+                isExternalAPICommand = 1;
+            } else if (!isInternalCommand) {
                 printf("command not found: %s\n", command[0]);
             }
 
-            if (!isInternalCommand && isExternalCommand) {
+            if (isExternalCommand) {
                 pid_t pid = fork();
                 if (pid < 0) {
 				    printf("Error in creating child process.\n");
@@ -227,6 +252,19 @@ int main() {
 					    perror("waitpid");
 				    }
                 }
+            }
+            
+            if (isExternalAPICommand) {
+                printf("Created thread\n");
+                pthread_t tid;
+                // printf("%s\n", inputStringCopy);
+                if (pthread_create(&tid, NULL, &checkAndExecuteExternalByAPI, inputStringCopy) != 0) {
+                    printf("Error in creating thread");
+                }
+                if (pthread_join(tid, NULL) != 0) {
+                    printf("Error in execution of thread");
+                };
+                printf("Done with thread\n");
             }
         }
     }
