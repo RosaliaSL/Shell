@@ -109,18 +109,36 @@ int pwd(int argc, char* argv[]) {
 }
 
 int cd(int argc, char** command) {
-    if (argc > 2) {
+    if (argc > 3) {
         printf("Incorrect number of parameters\n");
         return 1;
-    } if (argc == 1) {
+    } 
+    if (argc == 1) {
         chdir(getenv("HOME")); 
-    } else if (strcmp(command[1], "~") == 0) {
-        chdir(getenv("HOME")); 
-    } else if (chdir(command[1]) == 0) {
-        // printf("Directory Changed.\n");
-    } else if (chdir(command[1]) == -1) {
-		printf("%s: no such directory\n", command[1]);
-	}
+    }
+    else if(argc == 2){
+        if(strcmp(command[1], "~") == 0 || strcmp(command[1], "-P") == 0 || strcmp(command[1], "-L") == 0) {
+            chdir(getenv("HOME"));
+        }
+        else if (chdir(command[1]) == -1) {
+		    printf("%s: no such directory\n", command[1]);
+        }
+    }
+    else if(argc == 3){
+        if(strcmp(command[1], "-P") == 0) {
+            if (chdir(getenv(command[2])) == -1) {
+                printf("%s: no such directory\n", command[2]);
+            }
+        }
+        else if(strcmp(command[1], "-L") == 0) {
+            if (chdir(command[2]) == -1) {
+                printf("%s: no such directory\n", command[2]);
+            }
+        }
+        else{
+            printf("Invalid option\n");
+        }
+    }
     return 1;
 }
 
@@ -141,7 +159,7 @@ int checkAndExecuteInternal(int argc, char** command) {
 }
 
 void checkAndExecuteExternal(int argc, char** command) {
-    char outputFilePath[2048];
+    char outputFilePath[2048] = {};
 
     if (strcmp(command[0], "cat") == 0) {
         strcat(outputFilePath, "./Out/mycat");
