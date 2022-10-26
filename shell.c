@@ -142,29 +142,40 @@ int checkAndExecuteInternal(int argc, char** command) {
 
 void checkAndExecuteExternal(int argc, char** command) {
     char outputFilePath[2048];
-    int isExternalCommand = 0;
 
     if (strcmp(command[0], "cat") == 0) {
         strcat(outputFilePath, "./Out/mycat");
-        isExternalCommand  = 1;
 	} else if (strcmp(command[0], "date") == 0) {
         strcat(outputFilePath, "./Out/mydate");
-        isExternalCommand = 1;
 	} else if (strcmp(command[0], "ls") == 0) {
         strcat(outputFilePath, "./Out/myls");
-        isExternalCommand = 1;
 	} else if (strcmp(command[0], "mkdir") == 0) {
         strcat(outputFilePath, "./Out/mymkdir");
-        isExternalCommand = 1;
 	} else if (strcmp(command[0], "rm") == 0) {
         strcat(outputFilePath, "./Out/myrm");
-        isExternalCommand = 1;
 	} 
 
     if (execv(outputFilePath, command) == -1) {
         printf("Execution of command failed due to error in execv.\n");
     }
 			
+    return;
+}
+
+void checkAndExecuteExternalByAPI(int argc, char** command) {
+    char outputFilePath[2048];
+
+    if (strcmp(command[0], "cat&t") == 0) {
+        strcat(outputFilePath, "./Out/mycat");
+	} else if (strcmp(command[0], "date&t") == 0) {
+        strcat(outputFilePath, "./Out/mydate");
+	} else if (strcmp(command[0], "ls&t") == 0) {
+        strcat(outputFilePath, "./Out/myls");
+	} else if (strcmp(command[0], "mkdir&t") == 0) {
+        strcat(outputFilePath, "./Out/mymkdir");
+	} else if (strcmp(command[0], "rm&t") == 0) {
+        strcat(outputFilePath, "./Out/myrm");
+	} 	
     return;
 }
 
