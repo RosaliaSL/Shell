@@ -159,11 +159,9 @@ void checkAndExecuteExternal(int argc, char** command) {
 	} else if (strcmp(command[0], "rm") == 0) {
         strcat(outputFilePath, "./Out/myrm");
         isExternalCommand = 1;
-	} else {
-        printf("command not found: %s\n", command[0]);
-    }
+	} 
 
-    if (isExternalCommand && execv(outputFilePath, command) == -1) {
+    if (execv(outputFilePath, command) == -1) {
         printf("Execution of command failed due to error in execv.\n");
     }
 			
@@ -196,7 +194,15 @@ int main() {
                 copy[j] = command[j];
             }
             isInternalCommand = checkAndExecuteInternal(argc, command);
-            if (!isInternalCommand) {
+            
+            int isExternalCommand = 0;
+            if ((strcmp(command[0], "cat") == 0) || (strcmp(command[0], "date") == 0) || (strcmp(command[0], "ls") == 0) || (strcmp(command[0], "mkdir") == 0) || (strcmp(command[0], "rm") == 0)) {
+                isExternalCommand  = 1;
+	        } else if (!isInternalCommand) {
+                printf("command not found: %s\n", command[0]);
+            }
+
+            if (!isInternalCommand && isExternalCommand) {
                 pid_t pid = fork();
                 if (pid < 0) {
 				    printf("Error in creating child process.\n");
