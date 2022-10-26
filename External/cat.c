@@ -13,7 +13,7 @@ void cat_stdin() {
     }
 }
 
-void cat_singleFile(int argc, char *argv[], int currentFileIdx, int flag_s, int flag_b) {
+void catFile(int argc, char *argv[], int currentFileIdx, int flag_s, int flag_b) {
     int bufferSize = 4096;
     char buffer[bufferSize];
 
@@ -23,23 +23,23 @@ void cat_singleFile(int argc, char *argv[], int currentFileIdx, int flag_s, int 
         exit(1);
     }
     
-    int lastLineBlank = 0;
+    int isLastLineBlank = 0;
     int lineNumber = 1;
 
     while (fgets(buffer, bufferSize, fptr)) {
-        int length = strlen(buffer);
+        int len = strlen(buffer);
         if (flag_s) {
-            length = strlen(buffer);
-            int currentLineBlank = (length <= 1) ? 1 : 0;
-            if (lastLineBlank && currentLineBlank) {
+            len = strlen(buffer);
+            int isCurrLineBlank = (len <= 1) ? 1 : 0;
+            if (isLastLineBlank && isCurrLineBlank) {
                 continue;
             }
-            lastLineBlank = currentLineBlank;
+            isLastLineBlank = isCurrLineBlank;
         }
 
         if (flag_b) {
-                length = strlen(buffer);
-                if (length >= 1) {
+                len = strlen(buffer);
+                if (len >= 1) {
                     char *tmp = strdup(buffer);
                     buffer[0] = '\0';
                     sprintf(buffer, "%*d\t", 6,  lineNumber++);
@@ -60,15 +60,15 @@ int main(int argc, char *argv[]) {
         if (argv[1][0] != '-') {
             int currentFileIdx = 1;
             while (currentFileIdx < argc) {
-                cat_singleFile(argc, argv, currentFileIdx, 0, 0);
+                catFile(argc, argv, currentFileIdx, 0, 0);
                 currentFileIdx++;
             }
         } else if (argv[1][0] == '-' && argv[1][1] == 's') {
             flag_s = 1;
-            cat_singleFile(argc, argv, argc - 1, 1, 0);
+            catFile(argc, argv, argc - 1, 1, 0);
         } else if (argv[1][0] == '-' && argv[1][1] == 'b') {
             flag_b = 1;
-            cat_singleFile(argc, argv, argc - 1, 0, 1);
+            catFile(argc, argv, argc - 1, 0, 1);
         } else {
             perror("Unknown option error");
             exit(EXIT_FAILURE);
@@ -76,5 +76,6 @@ int main(int argc, char *argv[]) {
     } else {
         cat_stdin();
     }
+    printf("\n");
     return 0;
 }
