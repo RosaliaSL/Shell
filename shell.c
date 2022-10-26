@@ -103,7 +103,7 @@ int pwd(int argc, char* argv[]) {
         }
     }
     else{
-        printf("Invalid option");
+        printf("Invalid option\n");
     }
     return 1;
 }
